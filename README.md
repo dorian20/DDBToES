@@ -1,1 +1,2 @@
-# lambda repo for node.js
+
+DynamoDB data auotomation move to Elastic Search by Lambda
