@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+
+# Parameters are CloudFormation features to pass input
+# to your template when you create a stack
+Parameters:
+    TrafficShiftType:
+        Type: String
+
+Resources:
+  DDBToES:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: DDBToES.handler
+      Runtime: nodejs8.10
+      CodeUri: ../
+      Description: ''
+      MemorySize: 3008
+      Timeout: 300
+      Role: 'arn:aws:iam::515303172277:role/LambdaExecute'
+      FunctionName: DDBToES
+      Environment:
+        Variables:
+          DDB_TABLE_NAME: DP_SPDP_EXT
+          DEBUG_LOG: 'true'
+          ES_ENDPOINT: >-
+            https://search-es-ellotte-domain-1-2kgzlkdl4vhgl6jiu2uvfyzqqe.ap-northeast-2.es.amazonaws.com
+          ES_INDEX_PREFIX: dp_spdp_ext_test
+          ES_REGION: ap-northeast-2
+          ES_DOC: GD_GOODS_QNA
+          LAMBDA_FUNC_NAME: DDBToES
+          RemainingTimeInMillis: '20000'
+          DATE_FIELD: RGST_DTTM,MODI_DTTM
+          KEY_FIELD1: PartitionKey
+          KEY_FIELD2: SortKey(nullable)          
+
+      AutoPublishAlias: live
+      DeploymentPreference:
+       Type: !Ref TrafficShiftType #Canary10Percent10Minutes, Linear10PercentEvery1Minute  
